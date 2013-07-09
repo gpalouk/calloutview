@@ -293,6 +293,9 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
     // setting the anchor point moves the view a bit, so we need to reset
     self.$origin = calloutOrigin;
     
+    // make sure our frame is not on half-pixels or else we may be blurry!
+    self.frame = CGRectIntegral(self.frame);
+
     // layout now so we can immediately start animating to the final position if needed
     [self setNeedsLayout];
     [self layoutIfNeeded];
@@ -331,9 +334,17 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
 - (void)animationDidStart:(CAAnimation *)anim {
     BOOL presenting = [[anim valueForKey:@"presenting"] boolValue];
 
-    if (presenting)
+    if (presenting) {
+        if ([_delegate respondsToSelector:@selector(calloutViewWillAppear:)])
+            [_delegate calloutViewWillAppear:self];
+        
         // ok, animation is on, let's make ourselves visible!
         self.hidden = NO;
+    }
+    else if (!presenting) {
+        if ([_delegate respondsToSelector:@selector(calloutViewWillDisappear:)])
+            [_delegate calloutViewWillDisappear:self];
+    }
 }
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)finished {
@@ -433,7 +444,7 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
 }
 
 - (CGFloat)centeredPositionOfView:(UIView *)view relativeToView:(UIView *)parentView {
-    return (parentView.$height - view.$height) / 2;
+    return roundf((parentView.$height - view.$height) / 2);
 }
 
 - (void)layoutSubviews {
