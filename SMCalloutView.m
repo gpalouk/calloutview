@@ -776,7 +776,7 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
                                 (id)glossBottom.CGColor,
                                 (id)glossTop.CGColor, nil];
     CGFloat glossFillLocations[] = {0, 1};
-    CGGradientRef glossFill = CGGradientCreateWithColors(colorSpace, (CFArrayRef)glossFillColors, glossFillLocations);
+    CGGradientRef glossFill = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)glossFillColors, glossFillLocations);
     
     // Shadow Declarations
     UIColor* baseShadow = shadowBlack;
